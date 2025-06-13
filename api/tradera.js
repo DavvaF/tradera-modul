@@ -1,6 +1,9 @@
 import soap from 'soap';
 
 export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*'); // 👈 Viktigt
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
+
   const { id } = req.query;
 
   if (!id) {
