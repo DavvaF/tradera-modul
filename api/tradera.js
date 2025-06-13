@@ -1,7 +1,7 @@
 import soap from 'soap';
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*'); // 👈 Viktigt
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
 
   const { id } = req.query;
@@ -18,15 +18,26 @@ export default async function handler(req, res) {
       itemIds: { long: [parseInt(id)] }
     });
 
-    const item = result.GetItemsInformationResult.Items.Item;
+    let item = result.GetItemsInformationResult.Items.Item;
+
+    // Om det returneras en lista (array), ta första objektet
+    if (Array.isArray(item)) {
+      item = item[0];
+    }
+
+    const title = item.Title || '';
+    const numberOfBids = item.NumberOfBids || 0;
+    const currentPrice = item.CurrentPrice?.Amount || item.CurrentPrice || 0;
+    const endTime = item.EndTime || null;
 
     return res.status(200).json({
       auctionId: id,
-      title: item.Title,
-      currentPrice: item.CurrentPrice,
-      numberOfBids: item.NumberOfBids,
-      endTime: item.EndTime
+      title,
+      numberOfBids,
+      currentPrice,
+      endTime
     });
+
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Failed to fetch from Tradera" });
