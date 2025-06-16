@@ -1,3 +1,7 @@
+export const config = {
+  runtime: 'nodejs',
+};
+
 import soap from 'soap';
 
 export default async function handler(req, res) {
